@@ -1,0 +1,49 @@
+power = peripheral.wrap("tile_thermalexpansion_cell_basic_name_0")
+mon = peripheral.wrap("right")
+
+local maxPower = 0
+local curPower = 0
+local perPower = 0
+monX,monY = mon.getSize()
+
+function checkPower()
+  maxPower = power.getMaxEnergyStored()
+  curPower = power.getEnergyStored()
+  perPower = math.floor(((curPower/maxPower)*100)+0.5)
+end
+
+function writeMon()
+  mon.setBackgroundColor(colors.black)
+  if perPower<80 and perPower>20 then
+    mon.setTextColor(colors.yellow)
+	redstone.setBundledOutput("back",colors.yellow)
+  end
+  if perPower<20.1 then
+     mon.setTextColor(colors.red)
+	redstone.setBundledOutput("back",colors.red)
+  end
+  if perPower>79.9 then
+    mon.setTextColor(colors.green)
+	redstone.setBundledOutput("back",0)
+  end
+  mon.clear()
+  mon.setCursorPos(2,2)
+  mon.write(perPower)
+end
+
+function drawBar()
+  bar = math.floor(((curPower/maxPower)*(monX-2))+0.5)
+  mon.setCursorPos(2,monY-1)
+  mon.setBackgroundColor(colors.gray)
+  mon.write(string.rep(" ", monX-2))
+  mon.setCursorPos(2,monY-1)
+  mon.setBackgroundColor(colors.green)
+  mon.write(string.rep(" ", bar))
+end
+
+while true do
+  checkPower()
+  writeMon()
+  drawBar()
+  sleep(1)
+end
